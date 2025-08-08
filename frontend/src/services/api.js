@@ -7,12 +7,27 @@ const apiClient = axios.create({
     },
 });
 
-// Function to handle user registration
-export const register = (userData) => {
-    return apiClient.post('/users/register', userData);
-};
+// IMPORTANT: Add a request interceptor to include the token in all requests
+apiClient.interceptors.request.use(
+    (config) => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        if (userInfo && userInfo.token) {
+            config.headers.Authorization = `Bearer ${userInfo.token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
-// Function to handle user login
-export const login = (credentials) => {
-    return apiClient.post('/users/login', credentials);
-};
+
+// --- AUTH ---
+export const register = (userData) => apiClient.post('/users/register', userData);
+export const login = (credentials) => apiClient.post('/users/login', credentials);
+
+// --- NOTES ---
+export const getNotes = () => apiClient.get('/notes');
+export const createNote = (noteData) => apiClient.post('/notes', noteData);
+export const updateNote = (id, noteData) => apiClient.put(`/notes/${id}`, noteData);
+export const deleteNote = (id) => apiClient.delete(`/notes/${id}`);
