@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Header from './components/Header'; // Import Header
+import './index.css'; // must be above all components
 import ProtectedRoute from './components/ProtectedRoute'; // Import ProtectedRoute
 
 const App = () => {

@@ -1,41 +1,31 @@
+// src/pages/HomePage.jsx
 import React, { useState, useEffect } from 'react';
 import { getNotes, createNote, deleteNote, updateNote } from '../services/api';
-import {
-    Container, Box, Typography, TextField, Button, Grid, Card, CardContent,
-    CardActions, CircularProgress, Alert, Modal, Dialog, DialogTitle,
-    DialogContent, DialogActions, Chip, Stack
-} from '@mui/material';
+import NoteCard from '../components/NoteCard.jsx';
 
+const Modal = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
 
-const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4" onClick={onClose}>
+            <div className="bg-[--color-card] rounded-lg shadow-xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                {children}
+            </div>
+        </div>
+    );
 };
 
 const HomePage = () => {
-    // State for the list of notes
     const [notes, setNotes] = useState([]);
-    // State for the new note form
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    // State for loading and errors
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentNote, setCurrentNote] = useState(null); // The note being edited
-    const [editText, setEditText] = useState({ title: '', content: '' });
+    
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [noteToView, setNoteToView] = useState(null);
+    const [currentNote, setCurrentNote] = useState(null);
 
-
-    // --- Fetch all notes when the component mounts ---
     useEffect(() => {
         const fetchNotes = async () => {
             try {
@@ -50,15 +40,13 @@ const HomePage = () => {
         fetchNotes();
     }, []);
 
-    // --- Handle creating a new note ---
     const handleCreateNote = async (e) => {
         e.preventDefault();
+        setError('');
         try {
             const newNote = { title, content };
             const response = await createNote(newNote);
-            // Add the new note to the top of the list for instant UI update
             setNotes([response.data, ...notes]);
-            // Clear the form
             setTitle('');
             setContent('');
         } catch (err) {
@@ -66,23 +54,9 @@ const HomePage = () => {
         }
     };
 
-    const handleOpenModal = (note) => {
-        setCurrentNote(note);
-        setEditText({ title: note.title, content: note.content });
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setCurrentNote(null);
-        setEditText({ title: '', content: '' });
-    };
-
-    // --- Handle deleting a note ---
     const handleDeleteNote = async (id) => {
         try {
             await deleteNote(id);
-            // Filter out the deleted note for instant UI update
             setNotes(notes.filter((note) => note._id !== id));
         } catch (err) {
             setError('Failed to delete note.');
@@ -91,174 +65,112 @@ const HomePage = () => {
 
     const handleUpdateNote = async (e) => {
         e.preventDefault();
+        if (!currentNote) return;
         try {
-            const response = await updateNote(currentNote._id, editText);
-            // Update the note in the state
+            const response = await updateNote(currentNote._id, { title: currentNote.title, content: currentNote.content });
             setNotes(notes.map(note => (note._id === currentNote._id ? response.data : note)));
-            handleCloseModal();
+            closeEditModal();
         } catch (err) {
             setError('Failed to update note.');
         }
     };
 
-    // --- New functions to handle the View modal ---
-    const handleOpenViewModal = (note) => {
-        setNoteToView(note);
+    const openEditModal = (note) => {
+        setCurrentNote({ ...note });
+        setIsEditModalOpen(true);
+    };
+    const closeEditModal = () => setIsEditModalOpen(false);
+
+    const openViewModal = (note) => {
+        setCurrentNote(note);
         setIsViewModalOpen(true);
     };
-
-    const handleCloseViewModal = () => {
-        setIsViewModalOpen(false);
-        setNoteToView(null);
-    };
+    const closeViewModal = () => setIsViewModalOpen(false);
 
     if (loading) {
-        return <CircularProgress sx={{ display: 'block', margin: '2rem auto' }} />;
+        return <div className="text-center p-10 text-[--color-text-light]">Loading notes...</div>;
     }
 
     return (
-        <Container maxWidth="lg">
-            <Box sx={{ my: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    My Notes
-                </Typography>
-
-                {/* --- Create Note Form --- */}
-                <Box component="form" onSubmit={handleCreateNote} sx={{ mb: 4 }}>
-                    <Typography variant="h6">Create a New Note</Typography>
-                    {error && <Alert severity="error">{error}</Alert>}
-                    <TextField
-                        label="Title"
-                        fullWidth
-                        required
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="bg-[--color-card] p-6 rounded-lg shadow-md mb-8">
+                <h2 className="text-xl font-bold text-[--color-text-dark] mb-4">Create a New Note</h2>
+                {error && <p className="text-sm text-[--color-error] mb-4">{error}</p>}
+                <form onSubmit={handleCreateNote} className="space-y-4">
+                    <input
+                        type="text"
+                        placeholder="Title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Content"
-                        fullWidth
                         required
-                        multiline
-                        rows={4}
+                        className="w-full px-3 py-2 border border-[--color-border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-primary]"
+                    />
+                    <textarea
+                        placeholder="Content"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        margin="normal"
+                        required
+                        rows="4"
+                        className="w-full px-3 py-2 border border-[--color-border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-primary]"
                     />
-                    <Button type="submit" variant="contained" color="primary">
+                    <button
+                        type="submit"
+                        className="px-6 py-2 text-white bg-[--color-primary] rounded-md hover:bg-[--color-primary-dark] transition-colors"
+                    >
                         Add Note
-                    </Button>
-                </Box>
+                    </button>
+                </form>
+            </div>
 
-                {/* --- Display Notes --- */}
-<Grid container spacing={3}>
-    {notes.length > 0 ? (
-        notes.map((note) => (
-            <Grid item key={note._id} xs={12} sm={6} md={4}>
-                <Card>
-                    <CardContent>
-                        {/* The onClick here will open the new view modal */}
-                        <Typography
-                            variant="h5"
-                            component="div"
-                            onClick={() => handleOpenViewModal(note)}
-                            sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main' } }}
-                        >
-                            {note.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" noWrap>
-                            {/* noWrap will truncate long text with an ellipsis */}
-                            {note.content}
-                        </Typography>
-                    </CardContent>
-                    <CardActions>
-                        {/* The new "View" button */}
-                        <Button size="small" onClick={() => handleOpenViewModal(note)}>View</Button>
-                        <Button size="small" onClick={() => handleOpenModal(note)}>Edit</Button>
-                        <Button size="small" color="error" onClick={() => handleDeleteNote(note._id)}>Delete</Button>
-                    </CardActions>
-                </Card>
-            </Grid>
-        ))
-                    ) : (
-                        <Typography sx={{ ml: 2 }}>You have no notes yet. Create one above!</Typography>
-                    )}
-                </Grid>
-                <Modal
-                    open={isModalOpen}
-                    onClose={handleCloseModal}
-                    aria-labelledby="edit-note-modal-title"
-                >
-                    <Box sx={modalStyle} component="form" onSubmit={handleUpdateNote}>
-                        <Typography id="edit-note-modal-title" variant="h6" component="h2">
-                            Edit Note
-                        </Typography>
-                        <TextField
-                            label="Title"
-                            fullWidth
-                            required
-                            value={editText.title}
-                            onChange={(e) => setEditText({ ...editText, title: e.target.value })}
-                            margin="normal"
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {notes.length > 0 ? (
+                    notes.map((note) => (
+                        <NoteCard
+                            key={note._id}
+                            note={note}
+                            onView={openViewModal}
+                            onEdit={openEditModal}
+                            onDelete={handleDeleteNote}
                         />
-                        <TextField
-                            label="Content"
-                            fullWidth
-                            required
-                            multiline
-                            rows={4}
-                            value={editText.content}
-                            onChange={(e) => setEditText({ ...editText, content: e.target.value })}
-                            margin="normal"
-                        />
-                        <Button type="submit" variant="contained" sx={{ mt: 2 }}>Save Changes</Button>
-                    </Box>
-                </Modal>
+                    ))
+                ) : (
+                    <p className="text-[--color-text-light] col-span-full text-center py-10">You have no notes yet. Create one above!</p>
+                )}
+            </div>
 
-               
-            {/* --- Improved View Note Dialog (The New Part) --- */}
-            <Dialog
-                open={isViewModalOpen}
-                onClose={handleCloseViewModal}
-                fullWidth={true}
-                maxWidth="md"
-                aria-labelledby="view-note-dialog-title"
-            >
-                <DialogTitle id="view-note-dialog-title">
-                    {noteToView?.title}
-                </DialogTitle>
-                <DialogContent dividers>
-                    {/* This Box will correctly render the formatted HTML content */}
-                    <Box
-                        dangerouslySetInnerHTML={{ __html: noteToView?.content || '' }}
-                        sx={{
-                            // Add some basic styling for the content
-                            '& p': { margin: 0 },
-                            '& ol, & ul': { pl: 3 },
-                            lineHeight: 1.75,
-                            wordWrap: 'break-word',
-                        }}
+            <Modal isOpen={isEditModalOpen} onClose={closeEditModal}>
+                <h3 className="text-xl font-bold mb-4 text-[--color-text-dark]">Edit Note</h3>
+                <form onSubmit={handleUpdateNote} className="space-y-4">
+                    <input
+                        type="text"
+                        value={currentNote?.title || ''}
+                        onChange={(e) => setCurrentNote({ ...currentNote, title: e.target.value })}
+                        className="w-full px-3 py-2 border border-[--color-border] rounded-md"
                     />
+                    <textarea
+                        rows="6"
+                        value={currentNote?.content || ''}
+                        onChange={(e) => setCurrentNote({ ...currentNote, content: e.target.value })}
+                        className="w-full px-3 py-2 border border-[--color-border] rounded-md"
+                    />
+                    <div className="flex justify-end space-x-3 mt-4">
+                        <button type="button" onClick={closeEditModal} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                        <button type="submit" className="px-4 py-2 bg-[--color-primary] text-white rounded-md hover:bg-[--color-primary-dark]">Save Changes</button>
+                    </div>
+                </form>
+            </Modal>
 
-                    {/* Display tags if they exist */}
-                    {noteToView?.tags && noteToView.tags.length > 0 && (
-                        <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
-                            {noteToView.tags.map((tag, index) => (
-                                <Chip key={index} label={tag} />
-                            ))}
-                        </Stack>
-                    )}
-                </DialogContent>
-                <DialogActions sx={{ justifyContent: 'space-between', px: 3 }}>
-                    {/* Display the last updated date */}
-                    <Typography variant="caption" color="text.secondary">
-                        Last updated: {noteToView ? new Date(noteToView.updatedAt).toLocaleDateString() : ''}
-                    </Typography>
-                    <Button onClick={handleCloseViewModal}>Close</Button>
-                </DialogActions>
-            </Dialog>
-            </Box>
-        </Container>
+            <Modal isOpen={isViewModalOpen} onClose={closeViewModal}>
+                <h2 className="text-2xl font-bold mb-4 border-b border-[--color-border] pb-2 text-[--color-text-dark]">{currentNote?.title}</h2>
+                <div
+                    className="prose max-w-none text-[--color-text-dark]"
+                    dangerouslySetInnerHTML={{ __html: currentNote?.content || '' }}
+                />
+                <div className="mt-6 flex justify-end">
+                    <button onClick={closeViewModal} className="px-4 py-2 bg-[--color-primary] text-white rounded-md hover:bg-[--color-primary-dark]">Close</button>
+                </div>
+            </Modal>
+        </div>
     );
 };
 
