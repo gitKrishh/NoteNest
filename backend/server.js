@@ -23,7 +23,10 @@ app.use('/api/notes', noteRoutes);
 app.get('/', (req, res) => {
     res.send('NoteNest API is running...');
 });
-
+const corsOptions = {
+    origin: 'https://note-nest-psi.vercel.app', 
+    optionsSuccessStatus: 200
+};
 // Define the port
 const PORT = process.env.PORT || 5000;
 
