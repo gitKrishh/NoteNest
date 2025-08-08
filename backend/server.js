@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
+const noteRoutes = require('./routes/noteRoutes');
 
 // Initialize dotenv to use environment variables
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(cors());
 // Body Parser - Allows us to parse JSON in the body of requests
 app.use(express.json());
 app.use('/api/users', userRoutes);
+app.use('/api/notes', noteRoutes); 
 // A simple test route to make sure everything is working
 app.get('/', (req, res) => {
     res.send('NoteNest API is running...');
