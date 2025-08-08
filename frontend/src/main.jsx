@@ -6,8 +6,10 @@ import { AuthProvider } from './context/AuthContext.jsx'; // Make sure this is i
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     {/* AuthProvider must wrap your entire App */}
+      <BrowserRouter>
     <AuthProvider>
       <App />
     </AuthProvider>
+      </BrowserRouter>
   </React.StrictMode>,
 );
