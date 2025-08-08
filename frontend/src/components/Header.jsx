@@ -13,33 +13,33 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-[--color-card] shadow-md">
+        <header className="bg-white shadow-md">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex-shrink-0">
-                        <Link to="/" className="text-2xl font-bold text-[--color-primary]">
+                        <Link to="/" className="text-2xl font-bold text-blue-600">
                             NoteNest
                         </Link>
                     </div>
                     <div className="flex items-center space-x-4">
                         {user ? (
                             <>
-                                <span className="text-sm font-medium text-[--color-text-dark] hidden sm:block">
+                                <span className="text-sm font-medium text-gray-800 hidden sm:block">
                                     Welcome, {user.name}
                                 </span>
                                 <button
                                     onClick={handleLogout}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-[--color-primary] rounded-md hover:bg-[--color-primary-dark] transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
                                 >
                                     Logout
                                 </button>
                             </>
                         ) : (
                             <>
-                                <Link to="/login" className="px-4 py-2 text-sm font-medium text-[--color-text-dark] hover:text-[--color-primary] transition-colors">
+                                <Link to="/login" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
                                     Login
                                 </Link>
-                                <Link to="/register" className="px-4 py-2 text-sm font-medium text-white bg-[--color-primary] rounded-md hover:bg-[--color-primary-dark] transition-colors">
+                                <Link to="/register" className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
                                     Register
                                 </Link>
                             </>

@@ -7,8 +7,8 @@ const Modal = ({ isOpen, onClose, children }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4" onClick={onClose}>
-            <div className="bg-[--color-card] rounded-lg shadow-xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4" onClick={onClose}>
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
                 {children}
             </div>
         </div>
@@ -88,14 +88,14 @@ const HomePage = () => {
     const closeViewModal = () => setIsViewModalOpen(false);
 
     if (loading) {
-        return <div className="text-center p-10 text-[--color-text-light]">Loading notes...</div>;
+        return <div className="text-center p-10 text-gray-500">Loading notes...</div>;
     }
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="bg-[--color-card] p-6 rounded-lg shadow-md mb-8">
-                <h2 className="text-xl font-bold text-[--color-text-dark] mb-4">Create a New Note</h2>
-                {error && <p className="text-sm text-[--color-error] mb-4">{error}</p>}
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Create a New Note</h2>
+                {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
                 <form onSubmit={handleCreateNote} className="space-y-4">
                     <input
                         type="text"
@@ -103,7 +103,7 @@ const HomePage = () => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
-                        className="w-full px-3 py-2 border border-[--color-border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-primary]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <textarea
                         placeholder="Content"
@@ -111,11 +111,11 @@ const HomePage = () => {
                         onChange={(e) => setContent(e.target.value)}
                         required
                         rows="4"
-                        className="w-full px-3 py-2 border border-[--color-border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-primary]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
                         type="submit"
-                        className="px-6 py-2 text-white bg-[--color-primary] rounded-md hover:bg-[--color-primary-dark] transition-colors"
+                        className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
                     >
                         Add Note
                     </button>
@@ -134,40 +134,40 @@ const HomePage = () => {
                         />
                     ))
                 ) : (
-                    <p className="text-[--color-text-light] col-span-full text-center py-10">You have no notes yet. Create one above!</p>
+                    <p className="text-gray-500 col-span-full text-center py-10">You have no notes yet. Create one above!</p>
                 )}
             </div>
 
             <Modal isOpen={isEditModalOpen} onClose={closeEditModal}>
-                <h3 className="text-xl font-bold mb-4 text-[--color-text-dark]">Edit Note</h3>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">Edit Note</h3>
                 <form onSubmit={handleUpdateNote} className="space-y-4">
                     <input
                         type="text"
                         value={currentNote?.title || ''}
                         onChange={(e) => setCurrentNote({ ...currentNote, title: e.target.value })}
-                        className="w-full px-3 py-2 border border-[--color-border] rounded-md"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     />
                     <textarea
                         rows="6"
                         value={currentNote?.content || ''}
                         onChange={(e) => setCurrentNote({ ...currentNote, content: e.target.value })}
-                        className="w-full px-3 py-2 border border-[--color-border] rounded-md"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     />
                     <div className="flex justify-end space-x-3 mt-4">
                         <button type="button" onClick={closeEditModal} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-                        <button type="submit" className="px-4 py-2 bg-[--color-primary] text-white rounded-md hover:bg-[--color-primary-dark]">Save Changes</button>
+                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save Changes</button>
                     </div>
                 </form>
             </Modal>
 
             <Modal isOpen={isViewModalOpen} onClose={closeViewModal}>
-                <h2 className="text-2xl font-bold mb-4 border-b border-[--color-border] pb-2 text-[--color-text-dark]">{currentNote?.title}</h2>
+                <h2 className="text-2xl font-bold mb-4 border-b border-gray-200 pb-2 text-gray-900">{currentNote?.title}</h2>
                 <div
-                    className="prose max-w-none text-[--color-text-dark]"
+                    className="prose max-w-none text-gray-800"
                     dangerouslySetInnerHTML={{ __html: currentNote?.content || '' }}
                 />
                 <div className="mt-6 flex justify-end">
-                    <button onClick={closeViewModal} className="px-4 py-2 bg-[--color-primary] text-white rounded-md hover:bg-[--color-primary-dark]">Close</button>
+                    <button onClick={closeViewModal} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Close</button>
                 </div>
             </Modal>
         </div>

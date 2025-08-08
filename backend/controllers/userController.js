@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const generateToken = require('../utils/generateToken');
 
+
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public

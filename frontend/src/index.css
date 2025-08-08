@@ -1,20 +1,8 @@
 /* src/index.css */
 @import "tailwindcss";
 
-:root {
-  --color-primary: #2563EB;
-  --color-primary-dark: #1D4ED8;
-  --color-bg: #F9FAFB;
-  --color-card: #FFFFFF;
-  --color-text-dark: #1F2937;
-  --color-text-light: #6B7280;
-  --color-border: #D1D5DB;
-  --color-success: #16A34A;
-  --color-error: #DC2626;
-}
-
 body {
-  background-color: var(--color-bg);
+  background-color: #F9FAFB; /* bg-gray-50 */
   font-family: 'Inter', sans-serif;
-  color: var(--color-text-dark);
+  color: #1F2937; /* text-gray-800 */
 }
