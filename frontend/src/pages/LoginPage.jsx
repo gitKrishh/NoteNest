@@ -19,7 +19,7 @@ const LoginPage = () => {
             login(response.data);
             navigate('/');
         } catch (err) {
-            const message = err.response?.data?.message || 'Login failed.';
+            const message = err.response?.data?.message || 'Invalid email or password';
             setError(message);
         }
     };
