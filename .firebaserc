@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "notenest-e5bca"
-  }
+    "default": "spendtrack-app-8c359",
+    "staging": "notenest-e5bca"
+  },
+  "targets": {},
+  "etags": {}
 }
